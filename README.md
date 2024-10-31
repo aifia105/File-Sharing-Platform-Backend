@@ -10,11 +10,11 @@ This is the backend server for a File Sharing Platform, providing secure file up
 - **Search and Filtering**: Enables file searching by name, type, tags, or metadata.
 - 
 ## Tech Stack
-**Backend Framework**: Nest.js
-**Database**: MongoDB (MongoDB Atlas for cloud hosting)
-**File Storage**: DigitalOcean Spaces
-**Authentication**: JWT (JSON Web Tokens)
-**Logging**: Winston
+- **Backend Framework**: Nest.js
+- **Database**: MongoDB (MongoDB Atlas for cloud hosting)
+- **File Storage**: DigitalOcean Spaces
+- **Authentication**: JWT (JSON Web Tokens)
+- **Logging**: Winston
 
 ## Getting Started
 Prerequisites
