@@ -10,6 +10,7 @@ import {
   ValidationPipe,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from './dto/user.dto';
@@ -19,6 +20,9 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
+import { Public } from 'src/decorator/public.decorator';
 
 @ApiTags('User endpoints')
 @ApiBearerAuth()
@@ -50,6 +54,7 @@ export class UserController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @ApiCreatedResponse({
     type: UserDto,
     description: 'Users fetched successfully',
@@ -73,6 +78,7 @@ export class UserController {
     }
   }
 
+  @Public()
   @ApiCreatedResponse({
     type: UserDto,
     description: 'User fetched successfully',
@@ -96,6 +102,31 @@ export class UserController {
     }
   }
 
+  @Public()
+  @ApiCreatedResponse({
+    type: UserDto,
+    description: 'User fetched successfully',
+  })
+  @ApiOperation({ summary: 'Fetch user by email' })
+  @Get(':email')
+  async findOneByEmail(@Param('email') email: string) {
+    try {
+      return await this.userService.findOne(email);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: error.message,
+        },
+        HttpStatus.NOT_FOUND,
+        {
+          cause: error,
+        },
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @ApiCreatedResponse({
     type: UserDto,
     description: 'User updated successfully',
@@ -119,6 +150,7 @@ export class UserController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @ApiCreatedResponse({
     type: UserDto,
     description: 'User deleted successfully',

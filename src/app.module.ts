@@ -8,6 +8,8 @@ import { NotificationModule } from './notification/notification.module';
 import { GrantModule } from './grant/grant.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './guard/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -23,6 +25,6 @@ import { MongooseModule } from '@nestjs/mongoose';
     GrantModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}
