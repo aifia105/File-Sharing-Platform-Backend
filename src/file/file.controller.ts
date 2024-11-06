@@ -1,34 +1,59 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpException,
+  HttpStatus,
+  UploadedFiles,
+  UseInterceptors,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
+@ApiTags('Files endpoints')
+@ApiBearerAuth()
+@UsePipes(new ValidationPipe())
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
-  @Post()
-  create(@Body() createFileDto: CreateFileDto) {
-    return this.fileService.create(createFileDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.fileService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.fileService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-    return this.fileService.update(+id, updateFileDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.fileService.remove(+id);
+  @ApiCreatedResponse({
+    description: 'File uploaded successfully',
+  })
+  @ApiOperation({ summary: 'Endpoint for upload files on Azure Blob storage' })
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('files', 10))
+  async saveFile(
+    @Body() createFileDto: CreateFileDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    try {
+      return await this.fileService.saveFile(createFileDto, files);
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 }
