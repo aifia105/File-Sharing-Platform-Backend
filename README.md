@@ -8,7 +8,7 @@ This is the backend server for a File Sharing Platform, providing secure file up
 - **Download Logs**: Tracks download activity for each file and stores logs for analytics.
 - **Shareable Links**: Generates secure, password-protected links with optional expiration dates for sharing files.
 - **Search and Filtering**: Enables file searching by name, type, tags, or metadata.
-- 
+  
 ## Tech Stack
 - **Backend Framework**: Nest.js
 - **Database**: MongoDB (MongoDB Atlas for cloud hosting)
