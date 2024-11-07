@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UsePipes,
   ValidationPipe,
+  Delete,
 } from '@nestjs/common';
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -65,6 +66,54 @@ export class FileController {
   async downloadFile(@Param('fileName') fileName: string) {
     try {
       return await this.fileService.downloadFile(fileName);
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: error,
+        },
+      );
+    }
+  }
+  @ApiCreatedResponse({
+    description: 'File deleted successfully',
+  })
+  @ApiOperation({ summary: 'Endpoint for delete files on Azure Blob storage' })
+  @Delete('delete/:fileName')
+  async deleteFile(@Param('fileName') fileName: string) {
+    try {
+      return await this.fileService.deleteFile(fileName);
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: error,
+        },
+      );
+    }
+  }
+
+  @ApiCreatedResponse({
+    description: 'File access list updated successfully',
+  })
+  @ApiOperation({ summary: 'Endpoint for update files access list' })
+  @Post('update/:fileId')
+  async updateFileAccessList(
+    @Param('fileId') fileId: string,
+    @Body() newAccessList: string[],
+  ) {
+    try {
+      return await this.fileService.updateFileAccessList(fileId, newAccessList);
     } catch (error) {
       console.log(error);
       throw new HttpException(

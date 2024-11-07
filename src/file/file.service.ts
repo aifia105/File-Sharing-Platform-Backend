@@ -118,4 +118,23 @@ export class FileService {
       throw new InternalServerErrorException('Failed to delete file');
     }
   }
+
+  async updateFileAccessList(
+    fileId: string,
+    newAccessList: string[],
+  ): Promise<File> {
+    try {
+      const file = await this.fileModel.findById(fileId);
+      if (!file) {
+        throw new HttpException('File not found', 404);
+      }
+      file.accessList = newAccessList;
+      return await file.save();
+    } catch (error) {
+      console.error('Error updating file access list:', error);
+      throw new InternalServerErrorException(
+        'Failed to update file access list',
+      );
+    }
+  }
 }
