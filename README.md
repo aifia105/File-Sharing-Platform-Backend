@@ -3,18 +3,17 @@ This is the backend server for a File Sharing Platform, providing secure file up
 
 ## Features
 - **User Authentication**: Secure signup, login, and JWT-based authorization.
-- **File Upload & Management**: Handles file uploads, stores file metadata, and enforces size/type restrictions.
+- **File Upload & Management**: Handles file uploads and stores file metadata.
 - **Access Control**: Allows users to set file access permissions and expiration dates for secure sharing.
 - **Download Logs**: Tracks download activity for each file and stores logs for analytics.
 - **Shareable Links**: Generates secure, password-protected links with optional expiration dates for sharing files.
 - **Search and Filtering**: Enables file searching by name, type, tags, or metadata.
-- 
+  
 ## Tech Stack
 - **Backend Framework**: Nest.js
 - **Database**: MongoDB (MongoDB Atlas for cloud hosting)
-- **File Storage**: DigitalOcean Spaces
+- **File Storage**: Microsoft azure blob storage
 - **Authentication**: JWT (JSON Web Tokens)
-- **Logging**: Winston
 
 ## Getting Started
 Prerequisites
@@ -37,11 +36,14 @@ Create a .env file in the root directory and add the following variables:
 
 
 ```dotenv
+FRONTEND_URL
 PORT
 MONGODB_URI
 JWT_SECRET
-FRONTEND_URL
+JWT_EXPIRATION
+BCRYPT_SALT_ROUNDS
 SESSION_SECRET
+AZURE_STORAGE_CONNECTION_STRING
 ```
 ### Run the Server
 For development:
