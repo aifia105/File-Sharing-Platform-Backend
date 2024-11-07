@@ -7,8 +7,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class UploadService {
-  constructor() {}
+export class AzureService {
   private containerName = 'file-sharing';
 
   private async getBlobServiceInstance(): Promise<BlobServiceClient> {
@@ -65,6 +64,43 @@ export class UploadService {
     } catch (error) {
       console.error('Error uploading files:', error);
       throw new InternalServerErrorException('Failed to upload files');
+    }
+  }
+
+  async downloadFile(fileName: string): Promise<string> {
+    try {
+      const blobClient = await this.getBlobClient(fileName);
+      const downloadBlockBlobResponse = await blobClient.download();
+      const downloaded = await this.streamToBuffer(
+        downloadBlockBlobResponse.readableStreamBody,
+      ).toString();
+      return downloaded;
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      throw new InternalServerErrorException('Failed to download file');
+    }
+  }
+
+  private async streamToBuffer(readableStreamBody) {
+    return new Promise((resolve, reject) => {
+      const chunks = [];
+      readableStreamBody.on('data', (data) => {
+        chunks.push(data instanceof Buffer ? data : Buffer.from(data));
+      });
+      readableStreamBody.on('end', () => {
+        resolve(Buffer.concat(chunks));
+      });
+      readableStreamBody.on('error', reject);
+    });
+  }
+
+  async deleteFile(fileName: string): Promise<void> {
+    try {
+      const blobClient = await this.getBlobClient(fileName);
+      await blobClient.deleteIfExists();
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      throw new InternalServerErrorException('Failed to delete file');
     }
   }
 }

@@ -54,7 +54,6 @@ export class UserController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiCreatedResponse({
     type: UserDto,
     description: 'Users fetched successfully',
@@ -78,7 +77,6 @@ export class UserController {
     }
   }
 
-  @Public()
   @ApiCreatedResponse({
     type: UserDto,
     description: 'User fetched successfully',
@@ -102,7 +100,6 @@ export class UserController {
     }
   }
 
-  @Public()
   @ApiCreatedResponse({
     type: UserDto,
     description: 'User fetched successfully',
@@ -126,7 +123,6 @@ export class UserController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiCreatedResponse({
     type: UserDto,
     description: 'User updated successfully',
@@ -150,7 +146,6 @@ export class UserController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiCreatedResponse({
     type: UserDto,
     description: 'User deleted successfully',

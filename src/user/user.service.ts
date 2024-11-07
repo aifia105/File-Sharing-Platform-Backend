@@ -3,6 +3,7 @@ import { UserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -87,6 +88,25 @@ export class UserService {
       throw new HttpException(
         error.message || 'Error while updating user',
         HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  async updatePassword(userId: string, password: string) {
+    try {
+      const hashedPassword = await bcrypt.hash(
+        password,
+        process.env.BCRYPT_SALT_ROUNDS,
+      );
+      return await this.userModel.updateOne(
+        { _id: userId },
+        { password: hashedPassword },
+      );
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        error.message || 'Error while updating password',
+        HttpStatus.NOT_ACCEPTABLE,
       );
     }
   }

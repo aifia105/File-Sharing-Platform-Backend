@@ -28,7 +28,7 @@ export class File {
   accessControl: string;
 
   @Prop({ required: true })
-  downloadLink: string;
+  fileLink: string;
 
   @Prop({ required: true })
   downloadCount: number;

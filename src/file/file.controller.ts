@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   HttpException,
   HttpStatus,
   UploadedFiles,
@@ -42,6 +40,31 @@ export class FileController {
   ) {
     try {
       return await this.fileService.saveFile(createFileDto, files);
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: error,
+        },
+      );
+    }
+  }
+
+  @ApiCreatedResponse({
+    description: 'File download successfully',
+  })
+  @ApiOperation({
+    summary: 'Endpoint for download files from Azure Blob storage',
+  })
+  @Get('download/:fileName')
+  async downloadFile(@Param('fileName') fileName: string) {
+    try {
+      return await this.fileService.downloadFile(fileName);
     } catch (error) {
       console.log(error);
       throw new HttpException(
