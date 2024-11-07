@@ -36,11 +36,14 @@ Create a .env file in the root directory and add the following variables:
 
 
 ```dotenv
+FRONTEND_URL
 PORT
 MONGODB_URI
 JWT_SECRET
-FRONTEND_URL
+JWT_EXPIRATION
+BCRYPT_SALT_ROUNDS
 SESSION_SECRET
+AZURE_STORAGE_CONNECTION_STRING
 ```
 ### Run the Server
 For development:
