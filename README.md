@@ -12,9 +12,8 @@ This is the backend server for a File Sharing Platform, providing secure file up
 ## Tech Stack
 - **Backend Framework**: Nest.js
 - **Database**: MongoDB (MongoDB Atlas for cloud hosting)
-- **File Storage**: DigitalOcean Spaces
+- **File Storage**: Microsoft azure blob storage
 - **Authentication**: JWT (JSON Web Tokens)
-- **Logging**: Winston
 
 ## Getting Started
 Prerequisites
