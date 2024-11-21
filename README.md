@@ -8,6 +8,8 @@ This is the backend server for a File Sharing Platform, providing secure file up
 - **Download Logs**: Tracks download activity for each file and stores logs for analytics.
 - **Shareable Links**: Generates secure, password-protected links with optional expiration dates for sharing files.
 - **Search and Filtering**: Enables file searching by name, type, tags, or metadata.
+- **Automatic Deletion**: Cron job automatically deletes files from S3 and removes its metadata from MongoDB after the expiration date passes.
+- **Notifications**: Users receive notifications (via email) before their file expires and once it's deleted.
   
 ## Tech Stack
 - **Backend Framework**: Nest.js
