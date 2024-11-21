@@ -3,17 +3,19 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { CreateFileDto } from './dto/create-file.dto';
-import { File, FileDocument } from './entities/file.entity';
+import { CreateFileDto } from '../dto/create-file.dto';
+import { File, FileDocument } from '../entities/file.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { AzureService } from './azure.service';
+import { AzureService } from '../services/azure.service';
+import { FileLogs, FileLogsDocument } from '../entities/file.logs.entity';
 
 @Injectable()
 export class FileService {
   constructor(
     @InjectModel(File.name) private fileModel: Model<FileDocument>,
     private readonly azureService: AzureService,
+    @InjectModel(FileLogs.name) private fileLogsModel: Model<FileLogsDocument>,
   ) {}
 
   async saveFile(
@@ -45,7 +47,7 @@ export class FileService {
     }
   }
 
-  async downloadFile(fileName: string): Promise<string> {
+  async downloadFile(fileName: string, users: string[]): Promise<string> {
     try {
       const file = await this.fileModel.findOne({ fileName });
       if (!file) {
@@ -59,7 +61,14 @@ export class FileService {
         throw new HttpException('Unauthorized access', 401);
       }
       const downloadLink = await this.azureService.downloadFile(fileName);
-      if (downloadLink) {
+      const fileLog = new this.fileLogsModel({
+        fileName,
+        fileId: file._id,
+        downloadDate: new Date(),
+        users,
+        downloadCount: file.downloadCount + 1,
+      });
+      if (downloadLink && fileLog) {
         await this.incrementDownloadCount(fileName);
       }
       return downloadLink;
@@ -111,8 +120,11 @@ export class FileService {
       if (!file) {
         throw new HttpException('File not found', 404);
       }
-      await this.azureService.deleteFile(fileName);
-      await this.fileModel.deleteOne({ fileName });
+      await Promise.all([
+        this.azureService.deleteFile(fileName),
+        this.fileModel.deleteOne({ fileName: fileName }),
+        this.fileLogsModel.deleteMany({ fileName: fileName }),
+      ]);
     } catch (error) {
       console.error('Error deleting file:', error);
       throw new InternalServerErrorException('Failed to delete file');
@@ -135,6 +147,15 @@ export class FileService {
       throw new InternalServerErrorException(
         'Failed to update file access list',
       );
+    }
+  }
+
+  async getFiles(): Promise<File[]> {
+    try {
+      return await this.fileModel.find();
+    } catch (error) {
+      console.error('Error getting all files:', error);
+      throw new InternalServerErrorException('Failed to get all files');
     }
   }
 }

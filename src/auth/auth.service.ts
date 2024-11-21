@@ -109,10 +109,7 @@ export class AuthService {
     }
   }
 
-  private async validateUserLogin(
-    email: string,
-    password: string,
-  ): Promise<any> {
+  async validateUserLogin(email: string, password: string): Promise<any> {
     const user = await this.userService.findOneByEmail(email);
     const isMatch = await compare(password, user.password);
     if (user && isMatch) {

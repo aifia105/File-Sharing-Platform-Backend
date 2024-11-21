@@ -12,8 +12,8 @@ import {
   ValidationPipe,
   Delete,
 } from '@nestjs/common';
-import { FileService } from './file.service';
-import { CreateFileDto } from './dto/create-file.dto';
+import { FileService } from '../services/file.service';
+import { CreateFileDto } from '../dto/create-file.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -62,10 +62,13 @@ export class FileController {
   @ApiOperation({
     summary: 'Endpoint for download files from Azure Blob storage',
   })
-  @Get('download/:fileName')
-  async downloadFile(@Param('fileName') fileName: string) {
+  @Post('download/:fileName')
+  async downloadFile(
+    @Param('fileName') fileName: string,
+    @Body('userId') userId: string[],
+  ) {
     try {
-      return await this.fileService.downloadFile(fileName);
+      return await this.fileService.downloadFile(fileName, userId);
     } catch (error) {
       console.log(error);
       throw new HttpException(
